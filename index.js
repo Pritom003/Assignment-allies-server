@@ -166,10 +166,30 @@ app.get('/assignments', async (req, res) => {
       });
 
       app.get('/mysub/user/:examineeemail', async (req, res) => {
+
+
+            //   console.log(req.query.email);
+    //   console.log('user in the valid token', req.user)
+    //   if(req.query.email !== req.user.email){
+    //     return res.status(403).send({message: 'forbidden access'})
+    // }
+    // let query = {};
+    // if (req.query?.email) {
+    //     query = { email: req.query.email }}
+
+
+
         const examineeemail = req.params.examineeemail;
-        const query = {examineeemail};
-        const result = await MysubmissionCollection.find(query).toArray();
-        res.send(result);
+        console.log(examineeemail,'hiii');
+        if(examineeemail !== req.user){
+          return res.status(403).send({message: 'forbidden access'})
+        }else{
+          const query = {examineeemail};
+          const result = await MysubmissionCollection.find(query).toArray();
+          res.send(result);
+
+        }
+     
       });
       
 
