@@ -131,14 +131,7 @@ app.get('/assignments', async (req, res) => {
 
 
     app.get('/mysub', async (req,res)=>{
-    //   console.log(req.query.email);
-    //   console.log('user in the valid token', req.user)
-    //   if(req.query.email !== req.user.email){
-    //     return res.status(403).send({message: 'forbidden access'})
-    // }
-    // let query = {};
-    // if (req.query?.email) {
-    //     query = { email: req.query.email }}
+
       const cursor =MysubmissionCollection.find()
       const result= await cursor.toArray()
       res.send(result);
@@ -165,31 +158,25 @@ app.get('/assignments', async (req, res) => {
         res.send(result);
       });
 
+      // app.get('/mysub/user/:examineeemail', verifyToken, async (req, res) => {
+      //   const examineeemail = req.params.examineeemail;
+      //   const userEmail = req.user.email; // Extract email from the decoded token
+      
+      //   if (examineeemail !== userEmail) {
+      //     return res.status(403).send({ message: 'forbidden access' });
+      //   } else {
+      //     const query = { examineeemail };
+      //     const result = await MysubmissionCollection.find(query).toArray();
+      //     res.send(result);
+      //   }
+      // });
+      
       app.get('/mysub/user/:examineeemail', async (req, res) => {
-
-
-            //   console.log(req.query.email);
-    //   console.log('user in the valid token', req.user)
-    //   if(req.query.email !== req.user.email){
-    //     return res.status(403).send({message: 'forbidden access'})
-    // }
-    // let query = {};
-    // if (req.query?.email) {
-    //     query = { email: req.query.email }}
-
-
-
         const examineeemail = req.params.examineeemail;
-        console.log(examineeemail,'hiii');
-        if(examineeemail !== req.user){
-          return res.status(403).send({message: 'forbidden access'})
-        }else{
-          const query = {examineeemail};
+          const query = { examineeemail };
           const result = await MysubmissionCollection.find(query).toArray();
           res.send(result);
-
-        }
-     
+        
       });
       
 
