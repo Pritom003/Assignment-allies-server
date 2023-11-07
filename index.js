@@ -145,7 +145,6 @@ app.get('/assignments', async (req, res) => {
       
       })
 
-app.put
 
       app.get('/mysub/:_id', async (req, res) => {
         const _id = req.params._id; // Use req.params._id to get the _id parameter
