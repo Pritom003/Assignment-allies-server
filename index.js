@@ -1,11 +1,17 @@
 const express = require('express');
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const cors = require('cors');
+const cookieParser = require('cookie-parser');
 require('dotenv').config()
+var jwt = require('jsonwebtoken');
 const app = express();
 const port = process.env.PORT || 5000;
 // middleware
-app.use(cors());
+app.use(cors({
+  origin: ['http://localhost:5173', 'http://localhost:5174'],
+  credentials: true
+}));
+
 app.use(express.json());
 
 
@@ -23,6 +29,30 @@ const client = new MongoClient(uri, {
     deprecationErrors: true,
   }
 });
+
+
+
+const logger = async (req, res, next) => {
+  console.log('called:', req.host, req.originalUrl)
+  next();
+}
+
+const verifyToken = async (req, res, next) => {
+  const token = req.cookies?.token;
+  if (!token) {
+      return res.status(401).send({ message: 'unauthorized access' })
+  }
+  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => {
+      if (err) {
+          return res.status(401).send({ message: 'unauthorized access' })
+      }
+      req.user = decoded;
+      next();
+  })
+}
+
+
+
 async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
@@ -30,6 +60,38 @@ async function run() {
     // collections-----------------------------------
     const AssignmentCollections=client.db('AssignmentDB').collection('assignments')
     const MysubmissionCollection=client.db('AssignmentDB').collection('myassignment')
+              
+
+
+
+
+// jwt------------------------------------------------------
+
+
+
+app.post('/jwt', logger, async (req, res) => {
+  const user = req.body;
+  console.log(user);
+
+  const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {
+      expiresIn: '1h'
+  });
+
+  res
+      .cookie('token', token, {
+          httpOnly: true,
+          secure: false
+      })
+      .send({ success: true })
+})
+
+app.post('/logout',async(req,res)=>{
+  const user=req.body;
+  console.log('logout',user);
+  res.clearCookie('token',{maxAge:0}).send({success:true});
+
+})
+
 
 
 // get methods------------------------------------------
@@ -54,6 +116,7 @@ app.get('/assignments', async (req, res) => {
     
     
     })
+  
    
 
 
@@ -64,6 +127,25 @@ app.get('/assignments', async (req, res) => {
       const result = await AssignmentCollections.findOne(query);
       res.send(result);
     });
+
+
+    app.get('/mysub', async (req,res)=>{
+    //   console.log(req.query.email);
+    //   console.log('user in the valid token', req.user)
+    //   if(req.query.email !== req.user.email){
+    //     return res.status(403).send({message: 'forbidden access'})
+    // }
+    // let query = {};
+    // if (req.query?.email) {
+    //     query = { email: req.query.email }}
+      const cursor =MysubmissionCollection.find()
+      const result= await cursor.toArray()
+      res.send(result);
+      
+      
+      })
+
+
 // post methods---------------------------------
 app.post('/assignments',async(req,res)=>{
   const newassignment=req.body
