@@ -145,6 +145,15 @@ app.get('/assignments', async (req, res) => {
       
       })
 
+app.put
+
+      app.get('/mysub/:_id', async (req, res) => {
+        const _id = req.params._id; // Use req.params._id to get the _id parameter
+        const query = { _id: new ObjectId(_id) }; // Use ObjectId to create the query
+        const result = await MysubmissionCollection.findOne(query);
+        res.send(result);
+      });
+
 
 // post methods---------------------------------
 app.post('/assignments',async(req,res)=>{
@@ -188,6 +197,23 @@ app.put('/assignments/:id', async (req, res) => {
 
 
 
+app.put('/mysub/:id', async (req, res) => {
+  const id = req.params.id;
+  const filter = { _id: new ObjectId(id) }
+  const options = { upsert: true }
+  const updateProduct = req.body;
+  const product = {
+    $set: {
+      type: updateProduct. type,
+      description: updateProduct.description,
+      number: updateProduct. number,
+    }
+  }
+
+  const result=await MysubmissionCollection.updateOne(filter,
+    product,options)
+  res.send(result)
+})
 
 
 
