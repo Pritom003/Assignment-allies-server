@@ -60,6 +60,7 @@ async function run() {
     // collections-----------------------------------
     const AssignmentCollections=client.db('AssignmentDB').collection('assignments')
     const MysubmissionCollection=client.db('AssignmentDB').collection('myassignment')
+    const Featurescollection=client.db('AssignmentDB').collection('features')
               
 
 
@@ -146,12 +147,39 @@ app.get('/assignments', async (req, res) => {
       })
 
 
+      app.get('/features', async (req,res)=>{
+        
+          const cursor =Featurescollection.find()
+          const result= await cursor.toArray()
+          res.send(result);
+          
+          
+          })
+
+
+
       app.get('/mysub/:_id', async (req, res) => {
         const _id = req.params._id; // Use req.params._id to get the _id parameter
         const query = { _id: new ObjectId(_id) }; // Use ObjectId to create the query
         const result = await MysubmissionCollection.findOne(query);
         res.send(result);
       });
+
+      app.get('/mysub/user/:examineeemail', async (req, res) => {
+        const examineeemail = req.params.examineeemail;
+        const query = {examineeemail};
+        const result = await MysubmissionCollection.find(query).toArray();
+        res.send(result);
+      });
+      
+
+
+
+
+
+
+
+
 
 
 // post methods---------------------------------
